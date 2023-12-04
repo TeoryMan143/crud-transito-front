@@ -1,0 +1,19 @@
+---
+interface Props {
+  title: string;
+  icon: astroHTML.JSX.Element;
+  desc: string;
+  href: string;
+}
+
+const { title, icon: Icon, desc, href } = Astro.props;
+---
+
+<a
+  class='flex flex-col justify-center items-center gap-5 p-6 border-4 rounded-lg border-red-500 max-w-xs hover:shadow-lg'
+  href={href}
+>
+  <h2 class='text-4xl text-red-500 font-bold'>{title}</h2>
+  <Icon className='text-8xl text-red-500' />
+  <p>{desc}</p>
+</a>

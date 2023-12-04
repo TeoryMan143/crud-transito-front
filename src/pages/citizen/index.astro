@@ -1,0 +1,13 @@
+---
+import UserCard from '../../components/UserCard.astro';
+import Layout from '../../layouts/Layout.astro';
+import { getAllCitizens } from '../../lib/api';
+
+const citizens = await getAllCitizens();
+---
+
+<Layout title='Ciudadanos'>
+  <div class='flex gap-7 flex-wrap'>
+    {citizens.map(citizen => <UserCard citizen={citizen} />)}
+  </div>
+</Layout>
