@@ -1,0 +1,19 @@
+---
+import VehicleCard from '../../components/pages/vehicle/vehicle-card.tsx';
+import Search from '../../components/search/vehicle';
+import Layout from '../../layouts/Layout.astro';
+import { getAllVehicles } from '../../lib/api';
+
+const vehicles = await getAllVehicles();
+---
+
+<Layout title='Vehiculos'>
+  <div class='flex gap-3 flex-1 h-full'>
+    <div class='flex gap-7 flex-wrap h-full overflow-y-auto p-2'>
+      {vehicles.map(vehicle => <VehicleCard vehicle={vehicle} />)}
+    </div>
+    <div>
+      <Search client:visible />
+    </div>
+  </div>
+</Layout>

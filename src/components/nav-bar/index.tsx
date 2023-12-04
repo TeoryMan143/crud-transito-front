@@ -26,13 +26,13 @@ function NavigationBar() {
           </a>
         </li>
         <li className={currentPath.includes('/vehicle') ? 'active' : undefined}>
-          <a href='#'>
+          <a href='/vehicle'>
             <CarIcon className='text-3xl' />
             Vehiculos
           </a>
         </li>
         <li className={currentPath.includes('/fine') ? 'active' : undefined}>
-          <a href='#'>
+          <a href='/fine'>
             <TicketIcon className='text-3xl' />
             Multas
           </a>

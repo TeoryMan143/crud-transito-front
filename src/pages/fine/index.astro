@@ -1,0 +1,28 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getAllFines } from '../../lib/api';
+import FineCard from '../../components/pages/fine/fine-card.tsx';
+import Search from '../../components/search/fine';
+import { getFineInfo } from '../../lib/get-info';
+import type { FineInfo } from '../../lib/types';
+
+const fines = await getAllFines();
+const finesInfo = await Promise.all(
+  fines.map(async fine => await getFineInfo(fine.id))
+);
+---
+
+<Layout title='Multas'>
+  <div class='flex gap-3 flex-1 h-full'>
+    <div class='flex gap-7 flex-wrap h-full overflow-y-auto p-2'>
+      {
+        finesInfo.map(fineInfo => (
+          <FineCard fineInfo={fineInfo as FineInfo} client:visible />
+        ))
+      }
+    </div>
+    <div >
+      <Search client:visible />
+    </div>
+  </div>
+</Layout>

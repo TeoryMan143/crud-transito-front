@@ -1,13 +1,19 @@
 ---
-import UserCard from '../../components/UserCard.astro';
+import CitizenCard from '../../components/pages/citizen/citizen-card.tsx';
 import Layout from '../../layouts/Layout.astro';
 import { getAllCitizens } from '../../lib/api';
+import Search from '../../components/search/citizen';
 
 const citizens = await getAllCitizens();
 ---
 
 <Layout title='Ciudadanos'>
-  <div class='flex gap-7 flex-wrap'>
-    {citizens.map(citizen => <UserCard citizen={citizen} />)}
+  <div class='flex gap-3 flex-1 h-full'>
+    <div class='flex gap-7 flex-wrap h-full overflow-y-auto p-2'>
+      {citizens.map(citizen => <CitizenCard citizen={citizen} />)}
+    </div>
+    <div>
+      <Search client:visible />
+    </div>
   </div>
 </Layout>
