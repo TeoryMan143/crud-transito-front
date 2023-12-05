@@ -41,41 +41,37 @@ function Search() {
   }, [query, searchType]);
 
   return (
-    <div className='border-2 border-red-500 rounded-xl p-3 flex flex-col w-[400px] gap-3'>
+    <div className='border-2 border-red-500 rounded-xl p-3 flex flex-col w-[400px] gap-3 h-full'>
       <h3 className='text-3xl text-red-500 font-semibold'>Buscar Vehiculo</h3>
       <RadioGroup.Root
         defaultValue='plate'
         onValueChange={value => setSearchType(value)}
       >
-        <h4 className='text-red-400 text-xl'>Buscar por:</h4>
+        <h4 className='text-red-400 text-xl mb-3'>Buscar por:</h4>
         <div className='flex flex-col gap-3'>
-          <div className='flex items-center justify-center'>
+          <div className='flex items-center'>
             <RadioGroup.Item
               value='plate'
               id='rad-plate'
-              className='bg-white w-[25px] h-[25px] rounded-full'
+              className='bg-white w-[25px] h-[25px] rounded-full outline-none cursor-default border-[1.5px] border-amber-300'
             >
-              <div className='flex justify-center items-center'>
-                <RadioGroup.Indicator className="flex items-center justify-center relative after:content-[''] after:block after:w-[11px] after:h-[11px] after:rounded-[50%] after:bg-red-500" />
-                <label className='pl-3' htmlFor='rad-plate'>
-                  Placa
-                </label>
-              </div>
+              <RadioGroup.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-[11px] after:h-[11px] after:rounded-[50%] after:bg-red-500" />
             </RadioGroup.Item>
+            <label className='pl-3' htmlFor='rad-plate'>
+              Placa
+            </label>
           </div>
-          <div className='flex items-center justify-center'>
+          <div className='flex items-center'>
             <RadioGroup.Item
               value='cedula'
               id='rad-cedula'
-              className='bg-white w-[25px] h-[25px] rounded-full'
+              className='bg-white w-[25px] h-[25px] rounded-full outline-none cursor-default border-[1.5px] border-amber-300'
             >
-              <div className='flex justify-center items-center'>
-                <RadioGroup.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-[11px] after:h-[11px] after:rounded-[50%] after:bg-red-500" />
-                <label className='pl-3' htmlFor='rad-cedula'>
-                  Cedula
-                </label>
-              </div>
+              <RadioGroup.Indicator className="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-[11px] after:h-[11px] after:rounded-[50%] after:bg-red-500" />
             </RadioGroup.Item>
+            <label className='pl-3' htmlFor='rad-cedula'>
+              Cedula
+            </label>
           </div>
         </div>
       </RadioGroup.Root>

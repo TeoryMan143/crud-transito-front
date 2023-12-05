@@ -115,3 +115,15 @@ export const getFinesByCedula = async (cedula: number) => {
   const json: APIres<ResFine[]> = await res.json();
   return json;
 };
+
+export const getVehiclesByCitizen = async (id: string) => {
+  const res = await fetch(`${BASE_URL}/vehicle?owner=${id}`);
+  const json: APIres<ResVehicle[]> = await res.json();
+  return json;
+};
+
+export const getFinesByCitizen = async (id: string) => {
+  const res = await fetch(`${BASE_URL}/fine?citizen=${id}`);
+  const json: APIres<ResFine[]> = await res.json();
+  return json;
+};
