@@ -1,0 +1,116 @@
+---
+import DeleteButton from '../../../components/delete-button';
+import CitizenCard from '../../../components/pages/citizen/citizen-card';
+import FineCard from '../../../components/pages/fine/fine-card';
+import VehicleModel from '../../../components/pages/vehicle/vehicle-model';
+import Layout from '../../../layouts/Layout.astro';
+import {
+  formatCitizen,
+  formatFine,
+  formatVehicle,
+  getVehicle,
+  getFinesByVehicle,
+  getCitizen,
+} from '../../../lib/api';
+import { getFineInfo } from '../../../lib/get-info';
+import type { FineInfo } from '../../../lib/types';
+
+const { id } = Astro.params;
+
+if (!id) return Astro.redirect('404');
+
+const vehicleRes = await getVehicle(id);
+
+if (vehicleRes.error) return Astro.redirect('404');
+
+const vehicle = formatVehicle(vehicleRes.result);
+const {
+  brand,
+  color,
+  imageUrl,
+  model,
+  modelYear,
+  owner: ownerId,
+  plate,
+  soatEnd,
+  techEnd,
+} = vehicle;
+
+const soatExp = soatEnd.getTime() < new Date().getTime();
+const techExp = techEnd.getTime() < new Date().getTime();
+
+const finesRes = await getFinesByVehicle(id);
+const ownerRes = await getCitizen(ownerId);
+
+const fines = finesRes.result
+  ? finesRes.result.map(resFine => formatFine(resFine))
+  : [];
+
+const ownerInfo = formatCitizen(ownerRes.result);
+const finesInfo = (await Promise.all(
+  fines.map(async fine => await getFineInfo(fine.id))
+)) as FineInfo[];
+---
+
+<Layout title='Citizen panel'>
+  <div class='flex flex-col justify-center items-center flex-1 overflow-y-auto'>
+    <article class='p-6 grid grid-cols-3 h-full flex-1'>
+      <section class='flex flex-col gap-3 h-full p-3'>
+        <div>
+          <h2 class='text-red-500 text-5xl font-outfit'>
+            {plate}
+          </h2>
+          <VehicleModel color={color}>
+            {`${model} - ${modelYear.toString()}`}
+          </VehicleModel>
+        </div>
+
+        <img src={imageUrl} class='h-56 object-contain' alt='' />
+
+        <h4 class='text-amber-500 text-[26px] font-outfit font-bold'>
+          Informacion Basica:
+        </h4>
+
+        <ul class='flex flex-col gap-1'>
+          <li class='text-xl'>
+            <strong class='text-amber-500'>Fabricante:</strong>
+            {brand}
+          </li>
+          <li class='text-xl'>
+            <strong class='text-amber-500'>Soat vence:</strong>
+            <span class={`${soatExp && 'text-red-500'}`}>
+              {soatEnd.toLocaleString('es-CO', { dateStyle: 'medium' })}
+              {soatExp && <span class='text-xl'>* Vencido</span>}
+            </span>
+          </li>
+          <li class='text-xl'>
+            <strong class='text-amber-500'>Técnico mecánica vence:</strong>
+            <span class={`${techExp && 'text-red-500'}`}>
+              {techEnd.toLocaleString('es-CO', { dateStyle: 'medium' })}
+              {techExp && <span class='text-xl'>* Vencido</span>}
+            </span>
+          </li>
+        </ul>
+        <DeleteButton client:visible id={id} type='vehicle' />
+      </section>
+      <section
+        class='flex flex-col items-center gap-3 overflow-y-auto h-full p-3'
+      >
+        <h4 class='text-red-500 text-5xl font-outfit mb-3'>Dueño</h4>
+        <CitizenCard citizen={ownerInfo} />
+      </section>
+      <section
+        class='flex flex-col items-center gap-3 overflow-y-auto h-full p-3'
+      >
+        <h4 class='text-red-500 text-5xl font-outfit mb-3'>Multas</h4>
+        {
+          finesInfo.length === 0 ? (
+            <p class='text-red-500'>Sin Multas</p>
+          ) : (
+            finesInfo.map(fine => <FineCard fineInfo={fine} />)
+          )
+        }
+      </section>
+    </article>
+  </div>
+</Layout>

@@ -39,7 +39,7 @@ function Search() {
   }, [query, searchType]);
 
   return (
-    <div className='border-2 border-red-500 rounded-xl p-3 flex flex-col w-[300px] gap-3 h-full'>
+    <div className='border-2 border-red-500 rounded-xl p-3 flex flex-col w-[400px] gap-3 h-full'>
       <h3 className='text-3xl text-red-500 font-semibold'>Buscar Ciudadano</h3>
       <RadioGroup.Root
         className='flex flex-col gap-2.5'

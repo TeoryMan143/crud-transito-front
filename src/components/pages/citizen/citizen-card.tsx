@@ -10,7 +10,7 @@ function CitizenCard({ citizen }: Props) {
 
   return (
     <a
-      href={`citizen/${id}`}
+      href={`../citizen/${id}`}
       className='max-w-md border-2 border-red-500 rounded-xl p-4 hover:shadow-lg hover:scale-[1.01] transition-transform'
     >
       <h4 className='font-bold font-outfit text-lg text-red-500'>

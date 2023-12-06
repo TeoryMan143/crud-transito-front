@@ -127,3 +127,39 @@ export const getFinesByCitizen = async (id: string) => {
   const json: APIres<ResFine[]> = await res.json();
   return json;
 };
+
+export const getCitizenByVehicle = async (id: string) => {
+  const res = await fetch(`${BASE_URL}/citizen?vehicle=${id}`);
+  const json: APIres<ResCitizen> = await res.json();
+  return json;
+};
+
+export const getFinesByVehicle = async (id: string) => {
+  const res = await fetch(`${BASE_URL}/fine?vehicle=${id}`);
+  const json: APIres<ResFine[]> = await res.json();
+  return json;
+};
+
+export const deleteCitizen = async (id: string) => {
+  const res = await fetch(`${BASE_URL}/citizen/${id}`, {
+    method: 'DELETE',
+  });
+  const json: APIres<null> = await res.json();
+  return json;
+};
+
+export const deleteVehicle = async (id: string) => {
+  const res = await fetch(`${BASE_URL}/vehicle/${id}`, {
+    method: 'DELETE',
+  });
+  const json: APIres<null> = await res.json();
+  return json;
+};
+
+export const deleteFine = async (id: string) => {
+  const res = await fetch(`${BASE_URL}/fine/${id}`, {
+    method: 'DELETE',
+  });
+  const json: APIres<null> = await res.json();
+  return json;
+};

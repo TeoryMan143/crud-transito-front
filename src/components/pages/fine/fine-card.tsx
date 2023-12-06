@@ -1,6 +1,4 @@
-import { useEffect, useState } from 'react';
-import { getFineInfo } from '../../../lib/get-info';
-import type { Fine, FineInfo } from '../../../lib/types';
+import type { FineInfo } from '../../../lib/types';
 
 interface Props {
   fineInfo: FineInfo;
@@ -9,7 +7,7 @@ interface Props {
 function FineCard({ fineInfo }: Props) {
   return (
     <a
-      href={`fine/${fineInfo.id}`}
+      href={`../fine/${fineInfo.id}`}
       className='max-w-md border-2 border-red-500 rounded-xl p-4 hover:shadow-lg hover:scale-[1.01] transition-transform'
     >
       {!fineInfo ? (

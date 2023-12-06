@@ -2,6 +2,7 @@
 import FineCard from '../../../components/pages/fine/fine-card';
 import VehicleCard from '../../../components/pages/vehicle/vehicle-card';
 import Layout from '../../../layouts/Layout.astro';
+import DeleteButton from '../../../components/delete-button';
 import {
   formatCitizen,
   getCitizen,
@@ -15,9 +16,16 @@ import type { FineInfo } from '../../../lib/types';
 
 const { id } = Astro.params;
 
-if (!id) return;
+if (!id) {
+  return Astro.redirect('404');
+}
 
 const citizenRes = await getCitizen(id);
+
+if (citizenRes.error) {
+  return Astro.redirect('404');
+}
+
 const citizen = formatCitizen(citizenRes.result);
 const { address, birthDay, cedula, lastName, licenceEnd, name } = citizen;
 
@@ -39,63 +47,68 @@ const finesInfo = (await Promise.all(
 ---
 
 <Layout title='Citizen panel'>
-  {
-    citizenRes.error ? (
-      <div class='flex flex-col items-center'>
-        <h3 class='text-red-500 text-6xl font-outfit'>404</h3>
-        <p class='text-xl'>User not found</p>
-      </div>
-    ) : (
-      <div class='flex flex-col justify-center items-center flex-1 overflow-y-auto'>
-        <article class='p-6 grid grid-cols-3 h-full flex-1 '>
-          <section class='flex flex-col gap-3 h-full p-3'>
-            <div>
-              <h2 class='text-red-500 text-5xl font-outfit'>{`${name} ${lastName}`}</h2>
-              <h3 class='text-red-400 text-3xl font-outfit mt-[4px]'>
-                CC: {cedula}
-              </h3>
-            </div>
+  <div class='flex flex-col justify-center items-center flex-1 overflow-y-auto'>
+    <article class='p-6 grid grid-cols-3 h-full flex-1'>
+      <section class='flex flex-col gap-3 h-full p-3'>
+        <div>
+          <h2 class='text-red-500 text-5xl font-outfit'>
+            {`${name} ${lastName}`}
+          </h2>
+          <h3 class='text-red-400 text-3xl font-outfit mt-[4px]'>
+            CC: {cedula}
+          </h3>
+        </div>
 
-            <h4 class='text-amber-500 text-[26px] font-outfit font-bold'>
-              Informacion Basica:
-            </h4>
+        <h4 class='text-amber-500 text-[26px] font-outfit font-bold'>
+          Informacion Basica:
+        </h4>
 
-            <ul class='flex flex-col gap-1'>
-              <li class='text-xl'>
-                <strong class='text-amber-500 '>Nacio el: </strong>
-                {birthDay?.toLocaleString('es-CO', { dateStyle: 'medium' })}
-              </li>
-              <li class='text-xl'>
-                <strong class='text-amber-500 '>Dirección: </strong>
-                {address}
-              </li>
-              <li class='text-xl'>
-                <strong class='text-amber-500 '>Licencia vence: </strong>
-                <span class={`${licenceExp && 'text-red-500'}`}>
-                  {licenceEnd?.toLocaleString('es-CO', { dateStyle: 'medium' })}
-                  {licenceExp && <span class='text-xl'>* Vencido</span>}
-                </span>
-              </li>
-            </ul>
-          </section>
-          <section class='flex flex-col items-center gap-3 overflow-y-auto h-full p-3'>
-            <h4 class='text-red-500 text-5xl font-outfit mb-3'>Vehiculos</h4>
-            {vehicles.length === 0 ? (
-              <p class='text-red-500'>Sin Vehiculos</p>
-            ) : (
-              vehicles.map(vehicle => <VehicleCard vehicle={vehicle} />)
-            )}
-          </section>
-          <section class='flex flex-col items-center gap-3 overflow-y-auto h-full p-3'>
-            <h4 class='text-red-500 text-5xl font-outfit mb-3'>Multas</h4>
-            {finesInfo.length === 0 ? (
-              <p class='text-red-500'>Sin Multas</p>
-            ) : (
-              finesInfo.map(fine => <FineCard fineInfo={fine} />)
-            )}
-          </section>
-        </article>
-      </div>
-    )
-  }
+        <ul class='flex flex-col gap-1'>
+          <li class='text-xl'>
+            <strong class='text-amber-500'>Nacio el:</strong>
+            {birthDay?.toLocaleString('es-CO', { dateStyle: 'medium' })}
+          </li>
+          <li class='text-xl'>
+            <strong class='text-amber-500'>Dirección:</strong>
+            {address}
+          </li>
+          <li class='text-xl'>
+            <strong class='text-amber-500'>Licencia vence:</strong>
+            <span class={`${licenceExp && 'text-red-500'}`}>
+              {licenceEnd?.toLocaleString('es-CO', { dateStyle: 'medium' })}
+              {licenceExp && <span class='text-xl'>* Vencido</span>}
+            </span>
+          </li>
+        </ul>
+
+        <div class='flex gap-2 mt-3'>
+          <DeleteButton client:visible id={id} type='citizen' />
+        </div>
+      </section>
+      <section
+        class='flex flex-col items-center gap-3 overflow-y-auto h-full p-3'
+      >
+        <h4 class='text-red-500 text-5xl font-outfit mb-3'>Vehiculos</h4>
+        {
+          vehicles.length === 0 ? (
+            <p class='text-red-500'>Sin Vehiculos</p>
+          ) : (
+            vehicles.map(vehicle => <VehicleCard vehicle={vehicle} />)
+          )
+        }
+      </section>
+      <section
+        class='flex flex-col items-center gap-3 overflow-y-auto h-full p-3'
+      >
+        <h4 class='text-red-500 text-5xl font-outfit mb-3'>Multas</h4>
+        {
+          finesInfo.length === 0 ? (
+            <p class='text-red-500'>Sin Multas</p>
+          ) : (
+            finesInfo.map(fine => <FineCard fineInfo={fine} />)
+          )
+        }
+      </section>
+    </article>
+  </div>
 </Layout>
