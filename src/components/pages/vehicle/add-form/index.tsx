@@ -1,10 +1,22 @@
 import * as Form from '@radix-ui/react-form';
 import { type FormEventHandler, useState } from 'react';
-import { checkImageUrl, delay } from '../../../../lib/utils';
 import styles from './styles.module.css';
 import { addCitizen } from '../../../../lib/api';
 
-function NewCitizenForm() {
+// {
+//   color: string;
+//   vtype: 'Carro' | 'Moto';
+//   brand: string;
+//   model: string;
+//   model_year: number;
+//   plate: string;
+//   soat_end: string;
+//   tech_end: string;
+//   image_url: string;
+//   owner: string;
+// }
+
+function NewVehicleForm() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -30,7 +42,6 @@ function NewCitizenForm() {
       !licence_end
     ) {
       setLoading(false);
-      setDone(true);
       return;
     }
 
@@ -55,7 +66,7 @@ function NewCitizenForm() {
   return (
     <div className='flex justify-center items-center mt-16 '>
       <Form.Root
-        className='rounded-md p-5 border-2 border-red-500 w-[370PX] bg-amber-100 text-black'
+        className='rounded-md p-5 border-2 border-red-500 w-[450px] bg-amber-100 text-black'
         onSubmit={handleSubmit}
       >
         {done ? (
@@ -90,7 +101,7 @@ function NewCitizenForm() {
         ) : (
           <>
             <h2 className='font-bold text-2xl mb-3 text-red-500'>
-              Añadir Ciudadano
+              Añadir Vehiculo
             </h2>
             <div className='flex flex-col gap-3'>
               <Form.Field name='name'>
@@ -268,4 +279,4 @@ function NewCitizenForm() {
     </div>
   );
 }
-export default NewCitizenForm;
+export default NewVehicleForm;

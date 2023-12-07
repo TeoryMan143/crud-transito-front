@@ -10,6 +10,18 @@ const vehicles = await getAllVehicles();
 <Layout title='Vehiculos'>
   <div class='flex gap-3 flex-1 h-full'>
     <div class='flex gap-7 flex-wrap h-full overflow-y-auto p-2'>
+      <div class='w-full'>
+        <a
+          href='/vehicle/add'
+          class='inline-flex justify-center items-center gap-1
+        text-white bg-red-500
+          py-2 px-3 rounded-2xl
+          text-lg font-semibold font-outfit
+          transition-all hover:text-amber-200 hover:scale-[1.02]'
+        >
+          &plus; Añadir
+        </a>
+      </div>
       {vehicles.map(vehicle => <VehicleCard vehicle={vehicle} />)}
     </div>
     <div>
