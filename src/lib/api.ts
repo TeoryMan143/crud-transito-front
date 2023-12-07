@@ -2,6 +2,7 @@ import type {
   APIres,
   Citizen,
   Fine,
+  PostCitizen,
   ResCitizen,
   ResFine,
   ResVehicle,
@@ -161,5 +162,17 @@ export const deleteFine = async (id: string) => {
     method: 'DELETE',
   });
   const json: APIres<null> = await res.json();
+  return json;
+};
+
+export const addCitizen = async (postCitizen: PostCitizen) => {
+  const res = await fetch(`${BASE_URL}/citizen`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(postCitizen),
+  });
+  const json: APIres<ResCitizen> = await res.json();
   return json;
 };
