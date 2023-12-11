@@ -4,5 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 ---
 
 <Layout title='Añadir ciudadano'>
-  <NewVehicleForm client:load />
+  <div class='overflow-auto h-full'>
+    <NewVehicleForm client:load />
+  </div>
 </Layout>

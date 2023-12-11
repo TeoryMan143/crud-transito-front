@@ -3,6 +3,8 @@ import type {
   Citizen,
   Fine,
   PostCitizen,
+  PostFine,
+  PostVehicle,
   ResCitizen,
   ResFine,
   ResVehicle,
@@ -174,5 +176,29 @@ export const addCitizen = async (postCitizen: PostCitizen) => {
     body: JSON.stringify(postCitizen),
   });
   const json: APIres<ResCitizen> = await res.json();
+  return json;
+};
+
+export const addVehicle = async (postVehicle: PostVehicle) => {
+  const res = await fetch(`${BASE_URL}/vehicle`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(postVehicle),
+  });
+  const json: APIres<ResVehicle> = await res.json();
+  return json;
+};
+
+export const addFine = async (postVehicle: PostFine) => {
+  const res = await fetch(`${BASE_URL}/fine`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(postVehicle),
+  });
+  const json: APIres<ResVehicle> = await res.json();
   return json;
 };

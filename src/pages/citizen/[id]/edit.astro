@@ -1,0 +1,19 @@
+---
+import EditCitizenForm from '../../../components/pages/citizen/edit-form';
+import Layout from '../../../layouts/Layout.astro';
+import { formatCitizen, getCitizen } from '../../../lib/api';
+
+const { id } = Astro.params;
+
+if (!id) return Astro.redirect('../404');
+
+const resCitizen = await getCitizen(id);
+
+if (resCitizen.error) return Astro.redirect('../404');
+
+const citizen = formatCitizen(resCitizen.result);
+---
+
+<Layout title='Modificar ciudadano'>
+  <EditCitizenForm citizen={citizen} />
+</Layout>

@@ -2,8 +2,9 @@ import * as Form from '@radix-ui/react-form';
 import { type FormEventHandler, useState } from 'react';
 import { addCitizen } from '../../../../lib/api';
 import DoneAni from '../../../done';
+import type { Citizen } from '../../../../lib/types';
 
-function NewCitizenForm() {
+function EditCitizenForm({ citizen }: { citizen: Citizen }) {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -68,7 +69,7 @@ function NewCitizenForm() {
               Añadir Ciudadano
             </h2>
             <div className='flex flex-col gap-3'>
-              <Form.Field name='name'>
+              <Form.Field name='name' defaultValue={citizen.name}>
                 <div className='flex items-baseline justify-between'>
                   <Form.Label className='leading-[35px]'>Nombre</Form.Label>
                   <Form.Message
@@ -85,7 +86,24 @@ function NewCitizenForm() {
                   />
                 </Form.Control>
               </Form.Field>
-              <Form.Field name='cedula'>
+              <Form.Field name='last_name' defaultValue={citizen.lastName}>
+                <div className='flex items-baseline justify-between'>
+                  <Form.Label className='leading-[35px]'>Apellido</Form.Label>
+                  <Form.Message
+                    className='text-sm text-red-400 opacity-[0.8]'
+                    match='valueMissing'
+                  >
+                    Por favor introduce un apellido
+                  </Form.Message>
+                </div>
+                <Form.Control asChild>
+                  <input
+                    className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
+                    required
+                  />
+                </Form.Control>
+              </Form.Field>
+              <Form.Field name='cedula' defaultValue={citizen.cedula}>
                 <div className='flex items-baseline justify-between'>
                   <Form.Label className='leading-[35px]'>Cedula</Form.Label>
                   <Form.Message
@@ -103,24 +121,10 @@ function NewCitizenForm() {
                   />
                 </Form.Control>
               </Form.Field>
-              <Form.Field name='last_name'>
-                <div className='flex items-baseline justify-between'>
-                  <Form.Label className='leading-[35px]'>Apellido</Form.Label>
-                  <Form.Message
-                    className='text-sm text-red-400 opacity-[0.8]'
-                    match='valueMissing'
-                  >
-                    Por favor introduce un apellido
-                  </Form.Message>
-                </div>
-                <Form.Control asChild>
-                  <input
-                    className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
-                    required
-                  />
-                </Form.Control>
-              </Form.Field>
-              <Form.Field name='birth_day'>
+              <Form.Field
+                name='birth_day'
+                defaultValue={citizen.birthDay.toString()}
+              >
                 <div className='flex items-baseline justify-between'>
                   <Form.Label className='leading-[35px]'>
                     Fecha de nacimiento
@@ -140,7 +144,7 @@ function NewCitizenForm() {
                   />
                 </Form.Control>
               </Form.Field>
-              <Form.Field name='address'>
+              <Form.Field name='address' defaultValue={citizen.address}>
                 <div className='flex items-baseline justify-between'>
                   <Form.Label className='leading-[35px]'>Dirección</Form.Label>
                   <Form.Message
@@ -157,7 +161,10 @@ function NewCitizenForm() {
                   />
                 </Form.Control>
               </Form.Field>
-              <Form.Field name='licence_end'>
+              <Form.Field
+                name='licence_end'
+                defaultValue={citizen.licenceEnd.toString()}
+              >
                 <div className='flex items-baseline justify-between'>
                   <Form.Label className='leading-[35px]'>
                     Expiracion de licencia
@@ -243,4 +250,4 @@ function NewCitizenForm() {
     </div>
   );
 }
-export default NewCitizenForm;
+export default EditCitizenForm;

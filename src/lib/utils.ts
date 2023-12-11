@@ -1,4 +1,4 @@
-export function checkImageUrl(url: string) {
+export function checkImageUrl(url: string): Promise<boolean> {
   return new Promise((resolve, reject) => {
     const image = new Image();
 

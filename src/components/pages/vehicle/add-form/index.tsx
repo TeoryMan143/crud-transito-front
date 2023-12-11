@@ -1,24 +1,23 @@
 import * as Form from '@radix-ui/react-form';
+import * as ToggleGroup from '@radix-ui/react-toggle-group';
 import { type FormEventHandler, useState } from 'react';
-import styles from './styles.module.css';
-import { addCitizen } from '../../../../lib/api';
-
-// {
-//   color: string;
-//   vtype: 'Carro' | 'Moto';
-//   brand: string;
-//   model: string;
-//   model_year: number;
-//   plate: string;
-//   soat_end: string;
-//   tech_end: string;
-//   image_url: string;
-//   owner: string;
-// }
+import {
+  addVehicle,
+  getCitizen,
+  getCitizenByCedula,
+} from '../../../../lib/api';
+import DoneAni from '../../../done';
+import type { PostVehicle } from '../../../../lib/types';
+import { CarIcon } from '../../../icons/car';
+import { MotorcycleIcon } from '../../../icons/motor-cycle';
+import { checkImageUrl } from '../../../../lib/utils';
 
 function NewVehicleForm() {
   const [loading, setLoading] = useState(false);
+  const [vType, setVType] = useState('Carro');
   const [done, setDone] = useState(false);
+  const classItems =
+    'flex flex-col items-center data-[state=on]:text-red-500 data-[state=on]:font-bold';
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async e => {
     e.preventDefault();
@@ -26,77 +25,71 @@ function NewVehicleForm() {
 
     const formData = new FormData(e.currentTarget);
 
-    const name = formData.get('name');
-    const address = formData.get('address');
-    const last_name = formData.get('last_name');
-    const birth_day = formData.get('birth_day');
-    const cedula = formData.get('cedula');
-    const licence_end = formData.get('licence_end');
+    const brand = formData.get('brand');
+    const model = formData.get('model');
+    const model_year = formData.get('model_year');
+    const plate = formData.get('plate');
+    const soat_end = formData.get('soat_end');
+    const tech_end = formData.get('tech_end');
+    const image_url = formData.get('image_url');
+    const owner = formData.get('owner');
+    const color = formData.get('color');
 
     if (
-      !name ||
-      !address ||
-      !last_name ||
-      !birth_day ||
-      !cedula ||
-      !licence_end
+      !brand ||
+      !model ||
+      !model_year ||
+      !plate ||
+      !soat_end ||
+      !tech_end ||
+      !image_url ||
+      !owner ||
+      !color
     ) {
-      setLoading(false);
-      return;
+      window.alert('Ha ocurrido un error');
+      return setLoading(false);
     }
 
-    const birthDate = new Date(birth_day.toString());
-    const licenceDate = new Date(licence_end.toString());
+    const soatDate = new Date(soat_end.toString());
+    const techDate = new Date(tech_end.toString());
+    const citRes = await getCitizenByCedula(parseInt(owner.toString()));
 
-    const cit = {
-      name: name.toString(),
-      address: address.toString(),
-      last_name: last_name.toString(),
-      birth_day: birthDate.toISOString(),
-      cedula: parseInt(cedula.toString()),
-      licence_end: licenceDate.toISOString(),
-    };
+    if (citRes.error) return window.alert('Ha ocurrido un error');
 
-    const res = await addCitizen(cit);
+    const vehi: PostVehicle = {
+      vtype: vType,
+      brand: brand.toString(),
+      model: model.toString(),
+      model_year: parseInt(model_year.toString()),
+      plate: plate.toString(),
+      soat_end: soatDate.toISOString(),
+      tech_end: techDate.toISOString(),
+      image_url: image_url.toString(),
+      owner: citRes.result.id,
+      color: color.toString(),
+    } as PostVehicle;
+
+    const res = await addVehicle(vehi);
+
+    if (res.error) {
+      setLoading(false);
+      return window.alert('Ha ocurrido un error');
+    }
 
     setLoading(false);
     setDone(true);
   };
 
   return (
-    <div className='flex justify-center items-center mt-16 '>
+    <div className='flex justify-center items-center mt-16 h-full'>
       <Form.Root
         className='rounded-md p-5 border-2 border-red-500 w-[450px] bg-amber-100 text-black'
         onSubmit={handleSubmit}
       >
         {done ? (
           <div className='flex flex-col justify-center items-center'>
-            <svg
-              width='1em'
-              height='1em'
-              viewBox='0 0 50 50'
-              xmlns='http://www.w3.org/2000/svg'
-              className='text-6xl'
-            >
-              <circle
-                cx='25'
-                cy='25'
-                r='20'
-                fill='none'
-                stroke='currentColor'
-                strokeWidth='2'
-              />
-              <path
-                onAnimationEnd={() => (window.location.href = '/')}
-                id='checkmark'
-                className={styles.checkAnimation}
-                fill='none'
-                stroke='currentColor'
-                strokeWidth='4'
-                d='M14 27 l7 7 l16 -16'
-              />
-            </svg>
-            <p>Producto registrado</p>
+            <DoneAni />
+            <p>Vehiculo registrado</p>
           </div>
         ) : (
           <>
@@ -104,115 +97,231 @@ function NewVehicleForm() {
               Añadir Vehiculo
             </h2>
             <div className='flex flex-col gap-3'>
-              <Form.Field name='name'>
-                <div className='flex items-baseline justify-between'>
-                  <Form.Label className='leading-[35px]'>Nombre</Form.Label>
-                  <Form.Message
-                    className='text-sm text-red-400 opacity-[0.8]'
-                    match='valueMissing'
+              <div className='flex gap-1'>
+                <Form.Field name='brand' className='flex-1'>
+                  <div className='flex items-baseline justify-between'>
+                    <Form.Label className='leading-[35px]'>
+                      Fabricante
+                    </Form.Label>
+                    <Form.Message
+                      className='text-sm text-red-400 opacity-[0.8]'
+                      match='valueMissing'
+                    >
+                      Por favor introduce un fabricante
+                    </Form.Message>
+                  </div>
+                  <Form.Control asChild>
+                    <input
+                      className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
+                      required
+                    />
+                  </Form.Control>
+                </Form.Field>
+                <Form.Field name='model' className='flex-1'>
+                  <div className='flex items-baseline justify-between'>
+                    <Form.Label className='leading-[35px]'>Modelo</Form.Label>
+                    <Form.Message
+                      className='text-sm text-red-400 opacity-[0.8]'
+                      match='valueMissing'
+                    >
+                      Por favor introduce un modelo
+                    </Form.Message>
+                  </div>
+                  <Form.Control asChild>
+                    <input
+                      className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
+                      required
+                    />
+                  </Form.Control>
+                </Form.Field>
+              </div>
+              <div className='flex gap-1'>
+                <Form.Field name='model_year' className='flex-1'>
+                  <div className='flex items-baseline justify-between w-full'>
+                    <Form.Label className='leading-[35px]'>
+                      Año modelo
+                    </Form.Label>
+                    <Form.Message
+                      className='text-sm text-red-400 opacity-[0.8]'
+                      match='valueMissing'
+                    >
+                      Por favor introduce un año
+                    </Form.Message>
+                  </div>
+                  <Form.Control asChild>
+                    <input
+                      className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
+                      min={1900}
+                      max={2024}
+                      type='number'
+                      required
+                    />
+                  </Form.Control>
+                </Form.Field>
+                <ToggleGroup.Root
+                  type='single'
+                  value={vType}
+                  className='flex-1 flex justify-center items-center relative top-4 gap-4 text-xl'
+                  onValueChange={value => {
+                    if (value) setVType(value);
+                  }}
+                  aria-label='Vehicle type'
+                >
+                  <ToggleGroup.Item
+                    value='Carro'
+                    className={classItems}
+                    aria-label='"Carro" type'
                   >
-                    Por favor introduce un nombre
-                  </Form.Message>
-                </div>
-                <Form.Control asChild>
-                  <input
-                    className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
-                    required
-                  />
-                </Form.Control>
-              </Form.Field>
-              <Form.Field name='cedula'>
-                <div className='flex items-baseline justify-between'>
-                  <Form.Label className='leading-[35px]'>Cedula</Form.Label>
-                  <Form.Message
-                    className='text-sm text-red-400 opacity-[0.8]'
-                    match='valueMissing'
+                    <CarIcon />
+                    Carro
+                  </ToggleGroup.Item>
+                  <ToggleGroup.Item
+                    value='Moto'
+                    className={classItems}
+                    aria-label='"Moto" type'
                   >
-                    Por favor introduce una cedula
-                  </Form.Message>
+                    <MotorcycleIcon />
+                    Moto
+                  </ToggleGroup.Item>
+                </ToggleGroup.Root>
+              </div>
+              <div className='flex gap-1'>
+                <Form.Field name='owner' className='flex-1'>
+                  <div className='flex items-baseline justify-between'>
+                    <Form.Label className='leading-[35px]'>
+                      Cedula del dueño
+                    </Form.Label>
+                    <Form.Message
+                      className='text-sm text-red-400 opacity-[0.8]'
+                      match='valueMissing'
+                    >
+                      Por favor introduce una cedula
+                    </Form.Message>
+                    <Form.Message
+                      className='text-sm text-red-400 opacity-[0.8]'
+                      match={async value => {
+                        const res = await getCitizenByCedula(parseInt(value));
+                        return res.result === null;
+                      }}
+                    >
+                      Por favor introduce una cedula registrada
+                    </Form.Message>
+                  </div>
+                  <Form.Control asChild>
+                    <input
+                      className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
+                      type='number'
+                      required
+                    />
+                  </Form.Control>
+                </Form.Field>
+                <Form.Field name='plate' className='flex-1'>
+                  <div className='flex items-baseline justify-between'>
+                    <Form.Label className='leading-[35px]'>Placa</Form.Label>
+                    <Form.Message
+                      className='text-sm text-red-400 opacity-[0.8]'
+                      match='valueMissing'
+                    >
+                      Por favor introduce una placa
+                    </Form.Message>
+                  </div>
+                  <Form.Control asChild>
+                    <input
+                      className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
+                      required
+                    />
+                  </Form.Control>
+                </Form.Field>
+              </div>
+              <div className='flex gap-1'>
+                <Form.Field name='soat_end' className='flex-1'>
+                  <div className='flex items-baseline justify-between'>
+                    <Form.Label className='leading-[35px]'>
+                      Fecha de vencimiento del soat
+                    </Form.Label>
+                    <Form.Message
+                      className='text-sm text-red-400 opacity-[0.8]'
+                      match='valueMissing'
+                    >
+                      Por favor introduce una fecha
+                    </Form.Message>
+                  </div>
+                  <Form.Control asChild>
+                    <input
+                      className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
+                      type='date'
+                      required
+                    />
+                  </Form.Control>
+                </Form.Field>
+                <Form.Field name='tech_end' className='flex-1'>
+                  <div className='flex items-baseline justify-between'>
+                    <Form.Label className='leading-[35px]'>
+                      Fecha de vencimiento técnico mecánica
+                    </Form.Label>
+                    <Form.Message
+                      className='text-sm text-red-400 opacity-[0.8]'
+                      match='valueMissing'
+                    >
+                      Por favor introduce una placa
+                    </Form.Message>
+                  </div>
+                  <Form.Control asChild>
+                    <input
+                      className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
+                      type='date'
+                      required
+                    />
+                  </Form.Control>
+                </Form.Field>
+              </div>
+              <div className='flex gap-1'>
+                <Form.Field name='image_url' className='flex-[3]'>
+                  <div className='flex items-baseline justify-between'>
+                    <Form.Label className='leading-[35px]'>
+                      URL Imagen
+                    </Form.Label>
+                    <Form.Message
+                      className='text-sm text-red-400 opacity-[0.8]'
+                      match='valueMissing'
+                    >
+                      Por favor introduce un url
+                    </Form.Message>
+                    <Form.Message
+                      className='text-sm text-red-400 opacity-[0.8]'
+                      match={async value => !(await checkImageUrl(value))}
+                    >
+                      Por favor introduce un url valido
+                    </Form.Message>
+                  </div>
+                  <Form.Control asChild>
+                    <input
+                      className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
+                      required
+                    />
+                  </Form.Control>
+                </Form.Field>
+                <div className='flex justify-center flex-[2]'>
+                  <Form.Field name='color' className='flex-1'>
+                    <div className='flex items-baseline justify-between'>
+                      <Form.Label className='leading-[35px]'>Color</Form.Label>
+                      <Form.Message
+                        className='text-sm text-red-400 opacity-[0.8]'
+                        match='valueMissing'
+                      >
+                        Por favor introduce un color
+                      </Form.Message>
+                    </div>
+                    <Form.Control asChild>
+                      <input
+                        className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
+                        type='color'
+                        required
+                      />
+                    </Form.Control>
+                  </Form.Field>
                 </div>
-                <Form.Control asChild>
-                  <input
-                    className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
-                    type='number'
-                    required
-                  />
-                </Form.Control>
-              </Form.Field>
-              <Form.Field name='last_name'>
-                <div className='flex items-baseline justify-between'>
-                  <Form.Label className='leading-[35px]'>Apellido</Form.Label>
-                  <Form.Message
-                    className='text-sm text-red-400 opacity-[0.8]'
-                    match='valueMissing'
-                  >
-                    Por favor introduce un apellido
-                  </Form.Message>
-                </div>
-                <Form.Control asChild>
-                  <input
-                    className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
-                    required
-                  />
-                </Form.Control>
-              </Form.Field>
-              <Form.Field name='birth_day'>
-                <div className='flex items-baseline justify-between'>
-                  <Form.Label className='leading-[35px]'>
-                    Fecha de nacimiento
-                  </Form.Label>
-                  <Form.Message
-                    className='text-sm text-red-400 opacity-[0.8]'
-                    match='valueMissing'
-                  >
-                    Por favor ingresa la fecha de nacimiento
-                  </Form.Message>
-                </div>
-                <Form.Control asChild>
-                  <input
-                    className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
-                    type='date'
-                    required
-                  />
-                </Form.Control>
-              </Form.Field>
-              <Form.Field name='address'>
-                <div className='flex items-baseline justify-between'>
-                  <Form.Label className='leading-[35px]'>Dirección</Form.Label>
-                  <Form.Message
-                    className='text-sm text-red-400 opacity-[0.8]'
-                    match='valueMissing'
-                  >
-                    Por favor introduce una dirección
-                  </Form.Message>
-                </div>
-                <Form.Control asChild>
-                  <input
-                    className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
-                    required
-                  />
-                </Form.Control>
-              </Form.Field>
-              <Form.Field name='licence_end'>
-                <div className='flex items-baseline justify-between'>
-                  <Form.Label className='leading-[35px]'>
-                    Expiracion de licencia
-                  </Form.Label>
-                  <Form.Message
-                    className='text-sm text-red-400 opacity-[0.8]'
-                    match='valueMissing'
-                  >
-                    Por favor ingresa una fecha de expiracion de licencia
-                  </Form.Message>
-                </div>
-                <Form.Control asChild>
-                  <input
-                    className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
-                    type='date'
-                    required
-                  />
-                </Form.Control>
-              </Form.Field>
+              </div>
               <div className='grid place-content-center mt-5'>
                 <Form.Submit asChild>
                   <button
