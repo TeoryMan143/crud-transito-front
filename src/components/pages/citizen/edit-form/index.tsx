@@ -1,8 +1,9 @@
 import * as Form from '@radix-ui/react-form';
 import { type FormEventHandler, useState } from 'react';
-import { addCitizen } from '../../../../lib/api';
+import { addCitizen, editCitizen, formatCitizen } from '../../../../lib/api';
 import DoneAni from '../../../done';
 import type { Citizen } from '../../../../lib/types';
+import { getObjectDifferences } from '../../../../lib/utils';
 
 function EditCitizenForm({ citizen }: { citizen: Citizen }) {
   const [loading, setLoading] = useState(false);
@@ -46,7 +47,11 @@ function EditCitizenForm({ citizen }: { citizen: Citizen }) {
       licence_end: licenceDate.toISOString(),
     };
 
-    const res = await addCitizen(cit);
+    const newCitInfo = getObjectDifferences(citizen, cit);
+
+    const res = await editCitizen(citizen.id, newCitInfo);
+
+    if (res.error) return window.alert('Ha ocurrido un error');
 
     setLoading(false);
     setDone(true);
@@ -69,7 +74,7 @@ function EditCitizenForm({ citizen }: { citizen: Citizen }) {
               Añadir Ciudadano
             </h2>
             <div className='flex flex-col gap-3'>
-              <Form.Field name='name' defaultValue={citizen.name}>
+              <Form.Field name='name'>
                 <div className='flex items-baseline justify-between'>
                   <Form.Label className='leading-[35px]'>Nombre</Form.Label>
                   <Form.Message
@@ -82,11 +87,12 @@ function EditCitizenForm({ citizen }: { citizen: Citizen }) {
                 <Form.Control asChild>
                   <input
                     className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
+                    defaultValue={citizen.name}
                     required
                   />
                 </Form.Control>
               </Form.Field>
-              <Form.Field name='last_name' defaultValue={citizen.lastName}>
+              <Form.Field name='last_name'>
                 <div className='flex items-baseline justify-between'>
                   <Form.Label className='leading-[35px]'>Apellido</Form.Label>
                   <Form.Message
@@ -99,11 +105,12 @@ function EditCitizenForm({ citizen }: { citizen: Citizen }) {
                 <Form.Control asChild>
                   <input
                     className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
+                    defaultValue={citizen.lastName}
                     required
                   />
                 </Form.Control>
               </Form.Field>
-              <Form.Field name='cedula' defaultValue={citizen.cedula}>
+              <Form.Field name='cedula'>
                 <div className='flex items-baseline justify-between'>
                   <Form.Label className='leading-[35px]'>Cedula</Form.Label>
                   <Form.Message
@@ -117,14 +124,12 @@ function EditCitizenForm({ citizen }: { citizen: Citizen }) {
                   <input
                     className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
                     type='number'
+                    defaultValue={citizen.cedula}
                     required
                   />
                 </Form.Control>
               </Form.Field>
-              <Form.Field
-                name='birth_day'
-                defaultValue={citizen.birthDay.toString()}
-              >
+              <Form.Field name='birth_day'>
                 <div className='flex items-baseline justify-between'>
                   <Form.Label className='leading-[35px]'>
                     Fecha de nacimiento
@@ -140,11 +145,12 @@ function EditCitizenForm({ citizen }: { citizen: Citizen }) {
                   <input
                     className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
                     type='date'
+                    defaultValue={citizen.birthDay.toISOString().split('T')[0]}
                     required
                   />
                 </Form.Control>
               </Form.Field>
-              <Form.Field name='address' defaultValue={citizen.address}>
+              <Form.Field name='address'>
                 <div className='flex items-baseline justify-between'>
                   <Form.Label className='leading-[35px]'>Dirección</Form.Label>
                   <Form.Message
@@ -157,14 +163,12 @@ function EditCitizenForm({ citizen }: { citizen: Citizen }) {
                 <Form.Control asChild>
                   <input
                     className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
+                    defaultValue={citizen.address}
                     required
                   />
                 </Form.Control>
               </Form.Field>
-              <Form.Field
-                name='licence_end'
-                defaultValue={citizen.licenceEnd.toString()}
-              >
+              <Form.Field name='licence_end'>
                 <div className='flex items-baseline justify-between'>
                   <Form.Label className='leading-[35px]'>
                     Expiracion de licencia
@@ -180,6 +184,9 @@ function EditCitizenForm({ citizen }: { citizen: Citizen }) {
                   <input
                     className='box-border w-full bg-red-500 shadow-white inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none text-white shadow-[0_0_0_1px] outline-none hover:shadow-[0_0_0_1px_white] focus:shadow-[0_0_0_2px_white] selection:color-white selection:bg-white'
                     type='date'
+                    defaultValue={
+                      citizen.licenceEnd.toISOString().split('T')[0]
+                    }
                     required
                   />
                 </Form.Control>

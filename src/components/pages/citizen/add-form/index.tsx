@@ -47,6 +47,8 @@ function NewCitizenForm() {
 
     const res = await addCitizen(cit);
 
+    if (res.error) return window.alert('Ha ocurrido un error');
+
     setLoading(false);
     setDone(true);
   };

@@ -17,3 +17,19 @@ export function checkImageUrl(url: string): Promise<boolean> {
 export function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+export function getObjectDifferences(obj1: any, obj2: any) {
+  const differences: any = {};
+
+  for (const key in obj1) {
+    if (
+      obj1.hasOwnProperty(key) &&
+      obj2.hasOwnProperty(key) &&
+      obj1[key] !== obj2[key]
+    ) {
+      differences[key] = obj2[key];
+    }
+  }
+
+  return differences;
+}

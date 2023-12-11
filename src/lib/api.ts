@@ -2,6 +2,7 @@ import type {
   APIres,
   Citizen,
   Fine,
+  PartialCitizen,
   PostCitizen,
   PostFine,
   PostVehicle,
@@ -200,5 +201,17 @@ export const addFine = async (postVehicle: PostFine) => {
     body: JSON.stringify(postVehicle),
   });
   const json: APIres<ResVehicle> = await res.json();
+  return json;
+};
+
+export const editCitizen = async (id: string, postCitizen: PartialCitizen) => {
+  const res = await fetch(`${BASE_URL}/citizen/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(postCitizen),
+  });
+  const json: APIres<ResCitizen> = await res.json();
   return json;
 };
