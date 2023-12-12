@@ -3,6 +3,8 @@ import type {
   Citizen,
   Fine,
   PartialCitizen,
+  PartialFine,
+  PartialVehicle,
   PostCitizen,
   PostFine,
   PostVehicle,
@@ -204,14 +206,38 @@ export const addFine = async (postVehicle: PostFine) => {
   return json;
 };
 
-export const editCitizen = async (id: string, postCitizen: PartialCitizen) => {
+export const editCitizen = async (id: string, parCitizen: PartialCitizen) => {
   const res = await fetch(`${BASE_URL}/citizen/${id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(postCitizen),
+    body: JSON.stringify(parCitizen),
   });
   const json: APIres<ResCitizen> = await res.json();
+  return json;
+};
+
+export const editVehicle = async (id: string, parVehicle: PartialVehicle) => {
+  const res = await fetch(`${BASE_URL}/vehicle/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(parVehicle),
+  });
+  const json: APIres<ResVehicle> = await res.json();
+  return json;
+};
+
+export const editFine = async (id: string, parFine: PartialFine) => {
+  const res = await fetch(`${BASE_URL}/fine/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(parFine),
+  });
+  const json: APIres<ResFine> = await res.json();
   return json;
 };

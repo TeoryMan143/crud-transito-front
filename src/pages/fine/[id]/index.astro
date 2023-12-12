@@ -1,5 +1,6 @@
 ---
 import DeleteButton from '../../../components/delete-button';
+import { EditIcon } from '../../../components/icons/edit';
 import CitizenCard from '../../../components/pages/citizen/citizen-card';
 import VehicleCard from '../../../components/pages/vehicle/vehicle-card';
 import Layout from '../../../layouts/Layout.astro';
@@ -46,7 +47,19 @@ const citizen = formatCitizen(citizenRes.result);
           <span class='font-semibold text-amber-500'>Razon:</span>
           {reason}
         </h4>
-        <DeleteButton client:visible id={id} type='fine' />
+        <div class='flex gap-2 mt-3'>
+          <DeleteButton client:visible id={id} type='fine' />
+          <a
+            href=`/fine/${id}/edit`
+            class='flex justify-center items-center gap-1
+          text-white bg-amber-500
+            py-2 px-3 rounded-2xl
+            text-lg font-semibold font-outfit
+            transition-all hover:text-red-400 hover:scale-[1.02]'
+          >
+            <EditIcon /> Editar
+          </a>
+        </div>
       </section>
       <section
         class='flex flex-col items-center gap-3 overflow-y-auto h-full p-3'

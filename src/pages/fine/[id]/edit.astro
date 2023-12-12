@@ -1,8 +1,19 @@
 ---
+import EditFineForm from '../../../components/pages/fine/edit-form';
 import Layout from '../../../layouts/Layout.astro';
+import { formatFine, getFine } from '../../../lib/api';
+
 const { id } = Astro.params;
+
+if (!id) return Astro.redirect('../404');
+
+const resFine = await getFine(id);
+
+if (resFine.error) return Astro.redirect('../404');
+
+const fine = formatFine(resFine.result);
 ---
 
-<Layout title='Edit fine'>
-  <p>{id}</p>
+<Layout title='Modificar ciudadano'>
+  <EditFineForm fine={fine} client:load />
 </Layout>

@@ -1,0 +1,20 @@
+---
+import EditCitizenForm from '../../../components/pages/citizen/edit-form';
+import EditVehicleForm from '../../../components/pages/vehicle/edit-form';
+import Layout from '../../../layouts/Layout.astro';
+import { formatVehicle, getVehicle } from '../../../lib/api';
+
+const { id } = Astro.params;
+
+if (!id) return Astro.redirect('../404');
+
+const resVehicle = await getVehicle(id);
+
+if (resVehicle.error) return Astro.redirect('../404');
+
+const vehicle = formatVehicle(resVehicle.result);
+---
+
+<Layout title='Modificar ciudadano'>
+  <EditVehicleForm vehicle={vehicle} client:load />
+</Layout>

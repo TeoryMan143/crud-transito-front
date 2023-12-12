@@ -1,5 +1,6 @@
 ---
 import DeleteButton from '../../../components/delete-button';
+import { EditIcon } from '../../../components/icons/edit';
 import CitizenCard from '../../../components/pages/citizen/citizen-card';
 import FineCard from '../../../components/pages/fine/fine-card';
 import VehicleModel from '../../../components/pages/vehicle/vehicle-model';
@@ -91,7 +92,19 @@ const finesInfo = (await Promise.all(
             </span>
           </li>
         </ul>
-        <DeleteButton client:visible id={id} type='vehicle' />
+        <div class='flex gap-2 mt-3'>
+          <DeleteButton client:visible id={id} type='vehicle' />
+          <a
+            href=`/vehicle/${id}/edit`
+            class='flex justify-center items-center gap-1
+          text-white bg-amber-500
+            py-2 px-3 rounded-2xl
+            text-lg font-semibold font-outfit
+            transition-all hover:text-red-400 hover:scale-[1.02]'
+          >
+            <EditIcon /> Editar
+          </a>
+        </div>
       </section>
       <section
         class='flex flex-col items-center gap-3 overflow-y-auto h-full p-3'
